@@ -27,32 +27,9 @@ jobs:
           name: phpvm
           path: ./build/phpvm.exe
 
-  release:
-    runs-on: windows-latest
-    needs: build
-
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.21.5
-
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Build
-        run: go build -o ./build/phpvm.exe ./cmd/
-
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: myapp
-          path: ./build
-
       - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: Actions-R-Us/actions-tagger@95c51c646e75db5c6b7d447e3087bcee58677341
         with:
-          files: ./build/phpvm.exe
+          publish_latest: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
