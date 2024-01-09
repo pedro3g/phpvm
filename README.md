@@ -14,6 +14,7 @@
 PHPVM is a Version Manager (VM) designed to facilitate the management of different versions of PHP in a development environment. It allows you to easily switch between different PHP versions to ensure code compatibility.
 
 <div id="installation"></div>
+
 ## Installation
 
 Follow the steps below to install PHPVM on your system:
@@ -23,6 +24,7 @@ Download the latest version [Clicking here](https://github.com/pedro3g/phpvm/rel
 After that, you will need to add the path `C:\phpvm` to your system's environment variables. This can be done manually.
 
 <div id="usage"></div>
+
 ## Usage
 
 The available commands are:
@@ -34,11 +36,13 @@ The available commands are:
 | `phpvm -install <version>` | Install a PHP version           | `phpvm --install 8.3.1` |
 
 <div id="contribution"></div>
+
 ## Contribution
 
 This project does not yet have contribution policies.
 
 <div id="license"></div>
+
 ## License
 
 This project does not yet have a defined license.
