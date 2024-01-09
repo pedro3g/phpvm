@@ -7,6 +7,10 @@ import (
 	"github.com/pedro3g/phpvm/handlers"
 )
 
+var (
+	version = "1.0.0"
+)
+
 func main() {
 	flagVersion := flag.Bool("v", false, "Show phpvm version")
 	listAll := flag.Bool("list-all", false, "List all PHP versions available")
