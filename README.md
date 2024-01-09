@@ -24,6 +24,7 @@ After that, you will need to add the path `C:\phpvm` to your system's environmen
 
 <div id="usage"></div>
 ## Usage
+
 The available commands are:
 
 | Comand                     | Description                     | Example                 |
@@ -34,8 +35,10 @@ The available commands are:
 
 <div id="contribution"></div>
 ## Contribution
+
 This project does not yet have contribution policies.
 
 <div id="license"></div>
 ## License
+
 This project does not yet have a defined license.
