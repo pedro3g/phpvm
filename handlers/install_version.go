@@ -15,6 +15,8 @@ var (
 )
 
 func InstallVersion(version string) {
+	fmt.Println(releasesFolder)
+
 	fmt.Println("Downloading PHP version", version)
 
 	if _, err := os.Stat(releasesFolder); os.IsNotExist(err) {
@@ -46,10 +48,30 @@ func InstallVersion(version string) {
 		return
 	}
 
-	err = os.Remove(filePath + ".zip")
+	// err = os.Remove(filePath + ".zip")
+
+	// if err != nil {
+	// 	fmt.Println("An error occurred while removing the downloaded zip file:", err)
+	// 	return
+	// }
+
+	exists, path := utils.PhpExists()
+
+	if exists {
+		fmt.Println("Moving the old PHP version to", path+".old")
+
+		err := os.Rename(path, path+".old")
+
+		if err != nil {
+			fmt.Println("An error occurred while renaming the old PHP version:", err)
+			return
+		}
+	}
+
+	err = os.Rename(filePath, path)
 
 	if err != nil {
-		fmt.Println("An error occurred while removing the downloaded zip file:", err)
+		fmt.Println("An error occurred while renaming the new PHP version:", err)
 		return
 	}
 
