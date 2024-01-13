@@ -9,24 +9,30 @@ import (
 	"github.com/pedro3g/phpvm/utils"
 )
 
-var (
-	baseDir        = filepath.Dir(os.Args[0])
-	releasesFolder = baseDir + "/releases"
-)
-
 func InstallVersion(version string) {
-	phpExists, phpPath, actualVersion := utils.PhpExists()
 
-	fmt.Println("PHP exists:", phpExists)
-	fmt.Println("PHP path:", phpPath)
-	fmt.Println("PHP version:", actualVersion)
+	wd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("An error occurred while getting the current directory")
+		panic(err)
+	}
+
+	baseDir := utils.Ternary(os.Getenv("MODE") == "dev", wd, filepath.Dir(os.Args[0])).(string)
+	releasesFolder := filepath.Join(baseDir, "releases")
+
+	phpExists, phpPath, actualVersion := utils.PhpExists()
 
 	if phpExists && actualVersion == version {
 		fmt.Println("PHP version", version, "already installed at", phpPath, ". Nothing to do.")
-		return
+		os.Exit(0)
 	}
 
-	fmt.Println(releasesFolder)
+	versionAvailable, source := CheckVersionAvailability(version)
+
+	if !versionAvailable {
+		fmt.Println("Version", version, "not available")
+		os.Exit(1)
+	}
 
 	fmt.Println("Downloading PHP version", version)
 
@@ -34,10 +40,11 @@ func InstallVersion(version string) {
 		os.Mkdir(releasesFolder, os.ModePerm)
 	}
 
-	downloadReleaseUrl := "https://windows.php.net/downloads/releases/php-" + version + "-nts-Win32-vs16-x64.zip"
+	downloadReleaseUrl := "https://raw.githubusercontent.com/pedro3g/win-php-bin/master/releases/" + source
+
 	filePath := releasesFolder + "/php-" + version
 
-	err := utils.DownloadFile(downloadReleaseUrl, filePath+".zip")
+	err = utils.DownloadFile(downloadReleaseUrl, filePath+".zip")
 
 	if err != nil {
 		fmt.Println("An error occurred while downloading PHP")

@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"runtime"
 
+	"github.com/joho/godotenv"
 	"github.com/pedro3g/phpvm/handlers"
 )
 
@@ -12,6 +15,15 @@ var (
 )
 
 func main() {
+	godotenv.Load()
+
+	fmt.Println("Mode", os.Getenv("MODE"))
+
+	if runtime.GOOS != "windows" {
+		fmt.Println("This tool only works on Windows")
+		os.Exit(1)
+	}
+
 	flagVersion := flag.Bool("v", false, "Show phpvm version")
 	listAll := flag.Bool("list-all", false, "List all PHP versions available")
 	install := flag.String("install", "", "Install a PHP version")
@@ -22,7 +34,7 @@ func main() {
 		fmt.Println("Version:", version)
 		return
 	} else if *listAll {
-		handlers.ListAllVersions()
+		handlers.ListAllVersions(true)
 		return
 	} else if *install != "" {
 		handlers.InstallVersion(*install)

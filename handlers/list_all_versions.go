@@ -6,22 +6,11 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"runtime"
+
+	"github.com/pedro3g/phpvm/types"
 )
 
-type Release struct {
-	Tag    string `json:"tag"`
-	Source Source `json:"source"`
-}
-
-type Source map[string]string
-
-func ListAllVersions() {
-	if runtime.GOOS != "windows" {
-		fmt.Println("This tool only works on Windows")
-		os.Exit(1)
-	}
-
+func ListAllVersions(echo bool) []types.Release {
 	releasesUrl := "https://raw.githubusercontent.com/pedro3g/win-php-bin/master/releases.json"
 
 	resp, err := http.Get(releasesUrl)
@@ -39,7 +28,7 @@ func ListAllVersions() {
 		os.Exit(1)
 	}
 
-	var releases []Release
+	var releases []types.Release
 	err = json.Unmarshal(body, &releases)
 
 	if err != nil {
@@ -47,7 +36,13 @@ func ListAllVersions() {
 		os.Exit(1)
 	}
 
+	if !echo {
+		return releases
+	}
+
 	for _, release := range releases {
 		fmt.Println(release.Tag)
 	}
+
+	return releases
 }
