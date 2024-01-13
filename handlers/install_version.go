@@ -76,17 +76,6 @@ func InstallVersion(version string) {
 		panic(err)
 	}
 
-	if phpExists {
-		fmt.Println("Moving the old PHP version to", phpPath+".old")
-
-		err := os.Rename(phpPath, phpPath+".old")
-
-		if err != nil {
-			fmt.Println("An error occurred while renaming the old PHP version")
-			panic(err)
-		}
-	}
-
 	if _, err := os.Stat(phpPath); os.IsNotExist(err) {
 		os.Mkdir(phpPath, os.ModePerm)
 	}
