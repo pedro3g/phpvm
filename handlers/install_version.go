@@ -18,9 +18,14 @@ var (
 func InstallVersion(version string) {
 	phpExists, phpPath, actualVersion := utils.PhpExists()
 
-	if phpExists {
+	if phpExists && filepath.Join(releasesFolder, "php-"+actualVersion) != phpPath {
 		fmt.Println("PHP version", actualVersion, "found at", phpPath)
 		fmt.Println("If you can not use phpvm, please uninstall it first")
+		os.Exit(1)
+	}
+
+	if utils.AlreadyDownloaded(version) {
+		fmt.Println("PHP version", version, "already downloaded. If you want to use this version, use phpvm --use", version)
 		os.Exit(1)
 	}
 
@@ -87,6 +92,10 @@ func InstallVersion(version string) {
 	}
 
 	oldVars := os.Getenv("PATH")
+
+	if phpPath != "" {
+		oldVars = strings.Replace(oldVars, phpPath+";", "", -1)
+	}
 
 	err = exec.Command("setx", "PATH", filePath+";"+oldVars).Run()
 
