@@ -6,7 +6,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/joho/godotenv"
 	"github.com/pedro3g/phpvm/handlers"
 )
 
@@ -15,8 +14,6 @@ var (
 )
 
 func main() {
-	godotenv.Load()
-
 	if runtime.GOOS != "windows" {
 		fmt.Println("This tool only works on Windows")
 		os.Exit(1)

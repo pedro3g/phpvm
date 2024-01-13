@@ -10,17 +10,12 @@ import (
 	"github.com/pedro3g/phpvm/utils"
 )
 
+var (
+	baseDir        = utils.GetBaseDir()
+	releasesFolder = filepath.Join(baseDir, "releases")
+)
+
 func InstallVersion(version string) {
-
-	wd, err := os.Getwd()
-	if err != nil {
-		fmt.Println("An error occurred while getting the current directory")
-		panic(err)
-	}
-
-	baseDir := utils.Ternary(os.Getenv("MODE") == "dev", wd, filepath.Dir(os.Args[0])).(string)
-	releasesFolder := filepath.Join(baseDir, "releases")
-
 	phpExists, phpPath, actualVersion := utils.PhpExists()
 
 	if phpExists {
@@ -48,7 +43,7 @@ func InstallVersion(version string) {
 	splitDotLen := strings.Split(source, ".")
 	extension := splitDotLen[len(splitDotLen)-1]
 
-	err = utils.DownloadFile(downloadReleaseUrl, filePath+"."+extension)
+	err := utils.DownloadFile(downloadReleaseUrl, filePath+"."+extension)
 
 	if err != nil {
 		fmt.Println("An error occurred while downloading PHP")
