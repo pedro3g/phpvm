@@ -5,66 +5,49 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"runtime"
 )
 
-type Announcement struct {
-	English string `json:"English,omitempty"`
+type Release struct {
+	Tag    string `json:"tag"`
+	Source Source `json:"source"`
 }
 
-type Source struct {
-	Filename string `json:"filename"`
-	Name     string `json:"name"`
-	SHA256   string `json:"sha256"`
-	Date     string `json:"date"`
-}
-
-type VersionInfo struct {
-	Announcement interface{} `json:"announcement"`
-	Tags         []string    `json:"tags"`
-	Date         string      `json:"date"`
-	Source       []Source    `json:"source"`
-	Museum       bool        `json:"museum,omitempty"`
-}
-
-type Response map[string]VersionInfo
+type Source map[string]string
 
 func ListAllVersions() {
-	availableVersions := [5]int{3, 4, 5, 7, 8}
-
-	versionsMap := make(map[string]VersionInfo)
-
-	for _, i := range availableVersions {
-		resp, err := http.Get("https://www.php.net/releases/index.php?json=1&version=" + fmt.Sprint(i) + "&max=1000")
-
-		if err != nil {
-			fmt.Println("An error occurred while getting PHP list")
-			return
-		}
-
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-
-		if err != nil {
-			fmt.Println("An error occurred while reading PHP list")
-			return
-		}
-
-		var versions Response
-
-		err = json.Unmarshal(body, &versions)
-
-		if err != nil {
-			fmt.Println("An error occurred while parsing PHP list")
-			return
-		}
-
-		for version, info := range versions {
-			versionsMap[version] = info
-		}
+	if runtime.GOOS != "windows" {
+		fmt.Println("This tool only works on Windows")
+		os.Exit(1)
 	}
 
-	for version, info := range versionsMap {
-		fmt.Println(version, info.Date)
+	releasesUrl := "https://raw.githubusercontent.com/pedro3g/win-php-bin/master/releases.json"
+
+	resp, err := http.Get(releasesUrl)
+	if err != nil {
+		fmt.Println("Error while fetching releases list")
+		os.Exit(1)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error while reading releases list")
+		os.Exit(1)
+	}
+
+	var releases []Release
+	err = json.Unmarshal(body, &releases)
+
+	if err != nil {
+		fmt.Println("Error while parsing releases list")
+		os.Exit(1)
+	}
+
+	for _, release := range releases {
+		fmt.Println(release.Tag)
 	}
 }
