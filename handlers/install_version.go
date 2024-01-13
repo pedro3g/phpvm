@@ -15,6 +15,17 @@ var (
 )
 
 func InstallVersion(version string) {
+	phpExists, phpPath, actualVersion := utils.PhpExists()
+
+	fmt.Println("PHP exists:", phpExists)
+	fmt.Println("PHP path:", phpPath)
+	fmt.Println("PHP version:", actualVersion)
+
+	if phpExists && actualVersion == version {
+		fmt.Println("PHP version", version, "already installed at", phpPath, ". Nothing to do.")
+		return
+	}
+
 	fmt.Println(releasesFolder)
 
 	fmt.Println("Downloading PHP version", version)
@@ -30,7 +41,7 @@ func InstallVersion(version string) {
 
 	if err != nil {
 		fmt.Println("An error occurred while downloading PHP")
-		return
+		panic(err)
 	}
 
 	fmt.Println("Downloaded PHP version", version)
@@ -44,36 +55,76 @@ func InstallVersion(version string) {
 	err = cmd.Run()
 
 	if err != nil {
-		fmt.Println("An error occurred while extracting PHP:", err)
-		return
+		fmt.Println("An error occurred while extracting PHP")
+		panic(err)
 	}
 
-	// err = os.Remove(filePath + ".zip")
+	err = os.Remove(filePath + ".zip")
 
-	// if err != nil {
-	// 	fmt.Println("An error occurred while removing the downloaded zip file:", err)
-	// 	return
-	// }
+	if err != nil {
+		fmt.Println("An error occurred while removing the downloaded zip file")
+		panic(err)
+	}
 
-	exists, path := utils.PhpExists()
+	if phpExists {
+		fmt.Println("Moving the old PHP version to", phpPath+".old")
 
-	if exists {
-		fmt.Println("Moving the old PHP version to", path+".old")
-
-		err := os.Rename(path, path+".old")
+		err := os.Rename(phpPath, phpPath+".old")
 
 		if err != nil {
-			fmt.Println("An error occurred while renaming the old PHP version:", err)
-			return
+			fmt.Println("An error occurred while renaming the old PHP version")
+			panic(err)
 		}
 	}
 
-	err = os.Rename(filePath, path)
-
-	if err != nil {
-		fmt.Println("An error occurred while renaming the new PHP version:", err)
-		return
+	if _, err := os.Stat(phpPath); os.IsNotExist(err) {
+		os.Mkdir(phpPath, os.ModePerm)
 	}
 
-	fmt.Println("Installation complete!")
+	if phpExists {
+		// perguntar se deseja manter o php.ini atual
+		var keepIni string
+		fmt.Print("Do you want to keep the current php.ini file? (y/n) ")
+		fmt.Scan(&keepIni)
+
+		err = os.Rename(filePath, phpPath)
+
+		if keepIni == "y" {
+			err = os.Rename(phpPath+".old/php.ini", phpPath+"/php.ini")
+		}
+	} else {
+		_, err := os.Stat("C:/php")
+
+		if err == nil {
+			err = os.RemoveAll("C:/php")
+
+			if err != nil {
+				fmt.Println("An error occurred while removing the old PHP version")
+				panic(err)
+			}
+		}
+
+		err = os.Rename(filePath, "C:/php")
+
+		if err != nil {
+			fmt.Println("An error occurred while renaming the new PHP version")
+			panic(err)
+		}
+
+		oldVars := os.Getenv("PATH")
+
+		err = exec.Command("setx", "PATH", "C:\\php;"+oldVars).Run()
+
+		if err != nil {
+			fmt.Println("An error occurred while adding PHP to the PATH")
+			panic(err)
+		}
+	}
+
+	if err != nil {
+		fmt.Println("An error occurred while renaming the new PHP version")
+		panic(err)
+	}
+
+	fmt.Println("Installation complete! Please restart your terminal to apply the changes.")
 }
