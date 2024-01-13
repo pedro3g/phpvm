@@ -17,8 +17,6 @@ var (
 func main() {
 	godotenv.Load()
 
-	fmt.Println("Mode", os.Getenv("MODE"))
-
 	if runtime.GOOS != "windows" {
 		fmt.Println("This tool only works on Windows")
 		os.Exit(1)

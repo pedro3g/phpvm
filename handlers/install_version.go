@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/pedro3g/phpvm/utils"
 )
@@ -22,9 +23,10 @@ func InstallVersion(version string) {
 
 	phpExists, phpPath, actualVersion := utils.PhpExists()
 
-	if phpExists && actualVersion == version {
-		fmt.Println("PHP version", version, "already installed at", phpPath, ". Nothing to do.")
-		os.Exit(0)
+	if phpExists {
+		fmt.Println("PHP version", actualVersion, "found at", phpPath)
+		fmt.Println("If you can not use phpvm, please uninstall it first")
+		os.Exit(1)
 	}
 
 	versionAvailable, source := CheckVersionAvailability(version)
@@ -42,23 +44,24 @@ func InstallVersion(version string) {
 
 	downloadReleaseUrl := "https://raw.githubusercontent.com/pedro3g/win-php-bin/master/releases/" + source
 
-	filePath := releasesFolder + "/php-" + version
+	filePath := filepath.Join(releasesFolder, "php-"+version)
+	splitDotLen := strings.Split(source, ".")
+	extension := splitDotLen[len(splitDotLen)-1]
 
-	err = utils.DownloadFile(downloadReleaseUrl, filePath+".zip")
+	err = utils.DownloadFile(downloadReleaseUrl, filePath+"."+extension)
 
 	if err != nil {
 		fmt.Println("An error occurred while downloading PHP")
 		panic(err)
 	}
 
-	fmt.Println("Downloaded PHP version", version)
 	fmt.Println("Extracting PHP version", version)
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		os.Mkdir(filePath, os.ModePerm)
 	}
 
-	cmd := exec.Command("tar", "-xzf", filePath+".zip", "-C", filePath)
+	cmd := exec.Command("tar", "-xzf", filePath+"."+extension, "-C", filePath)
 	err = cmd.Run()
 
 	if err != nil {
@@ -66,7 +69,7 @@ func InstallVersion(version string) {
 		panic(err)
 	}
 
-	err = os.Remove(filePath + ".zip")
+	err = os.Remove(filePath + "." + extension)
 
 	if err != nil {
 		fmt.Println("An error occurred while removing the downloaded zip file")
@@ -88,48 +91,12 @@ func InstallVersion(version string) {
 		os.Mkdir(phpPath, os.ModePerm)
 	}
 
-	if phpExists {
-		// perguntar se deseja manter o php.ini atual
-		var keepIni string
-		fmt.Print("Do you want to keep the current php.ini file? (y/n) ")
-		fmt.Scan(&keepIni)
+	oldVars := os.Getenv("PATH")
 
-		err = os.Rename(filePath, phpPath)
-
-		if keepIni == "y" {
-			err = os.Rename(phpPath+".old/php.ini", phpPath+"/php.ini")
-		}
-	} else {
-		_, err := os.Stat("C:/php")
-
-		if err == nil {
-			err = os.RemoveAll("C:/php")
-
-			if err != nil {
-				fmt.Println("An error occurred while removing the old PHP version")
-				panic(err)
-			}
-		}
-
-		err = os.Rename(filePath, "C:/php")
-
-		if err != nil {
-			fmt.Println("An error occurred while renaming the new PHP version")
-			panic(err)
-		}
-
-		oldVars := os.Getenv("PATH")
-
-		err = exec.Command("setx", "PATH", "C:\\php;"+oldVars).Run()
-
-		if err != nil {
-			fmt.Println("An error occurred while adding PHP to the PATH")
-			panic(err)
-		}
-	}
+	err = exec.Command("setx", "PATH", filePath+";"+oldVars).Run()
 
 	if err != nil {
-		fmt.Println("An error occurred while renaming the new PHP version")
+		fmt.Println("An error occurred while adding PHP to the PATH")
 		panic(err)
 	}
 
