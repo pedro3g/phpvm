@@ -30,11 +30,12 @@ After that, you will need to add the path `C:\phpvm` to your system's environmen
 
 The available commands are:
 
-| Comand                     | Description                     | Example                 |
-| -------------------------- | ------------------------------- | ----------------------- |
-| `phpvm -v`                 | Show phpvm version              |                         |
-| `phpvm -list-all`          | List all PHP versions available |                         |
-| `phpvm -install <version>` | Install a PHP version           | `phpvm --install 8.3.1` |
+| Comand                    | Description                     | Example               |
+| ------------------------- | ------------------------------- | --------------------- |
+| `phpvm -v`                | Show phpvm version              |                       |
+| `phpvm -list-all`         | List all PHP versions available |                       |
+| `phpvm install <version>` | Install a PHP version           | `phpvm install 8.3.1` |
+| `phpvm use <version>`     | Change php version              | `phpvm use 8.3.1`     |
 
 <div id="contribution"></div>
 
@@ -46,4 +47,4 @@ This project does not yet have contribution policies.
 
 ## License
 
-This project does not yet have a defined license.
+This project is under the MIT license which can be accessed by [clicking here](/LICENSE)
