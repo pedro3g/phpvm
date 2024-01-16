@@ -20,7 +20,7 @@ PHPVM is a Version Manager (VM) designed to facilitate the management of differe
 
 Follow the steps below to install PHPVM on your system:
 
-Download the latest version [Clicking here](https://github.com/pedro3g/phpvm/releases/tag/latest). After that, create the `phpvm` folder in `C:\` and move the `phpvm.exe` file inside.
+Download the latest version [Clicking here](https://github.com/pedro3g/phpvm/releases/tag/latest). After that, create the `phpm` folder in `C:\` and move the executable to the folder inside by renaming it to `phpvm.exe`
 
 After that, you will need to add the path `C:\phpvm` to your system's environment variables. This can be done manually.
 
