@@ -21,7 +21,6 @@ func main() {
 
 	flagVersion := flag.Bool("v", false, "Show phpvm version")
 	listAll := flag.Bool("list-all", false, "List all PHP versions available")
-	install := flag.String("install", "", "Install a PHP version")
 
 	flag.Parse()
 
@@ -31,8 +30,14 @@ func main() {
 	} else if *listAll {
 		handlers.ListAllVersions(true)
 		return
-	} else if *install != "" {
-		handlers.InstallVersion(*install)
+	} else if flag.Arg(0) == "install" {
+		handlers.InstallVersion(flag.Arg(1))
+		return
+	} else if flag.Arg(0) == "use" {
+		handlers.UseVersion(flag.Arg(1))
+		return
+	} else {
+		flag.PrintDefaults()
 		return
 	}
 }

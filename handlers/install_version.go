@@ -10,12 +10,9 @@ import (
 	"github.com/pedro3g/phpvm/utils"
 )
 
-var (
-	baseDir        = utils.GetBaseDir()
-	releasesFolder = filepath.Join(baseDir, "releases")
-)
-
 func InstallVersion(version string) {
+	baseDir := utils.GetBaseDir()
+	releasesFolder := filepath.Join(baseDir, "releases")
 	phpExists, phpPath, actualVersion := utils.PhpExists()
 
 	if phpExists && filepath.Join(releasesFolder, "php-"+actualVersion) != phpPath {
