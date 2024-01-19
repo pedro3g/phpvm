@@ -1,4 +1,4 @@
-BINARY_NAME=phpenv
+BINARY_NAME=phpvm
 OUTPUT_DIR=build
 
 build:

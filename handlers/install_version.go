@@ -13,9 +13,9 @@ import (
 func InstallVersion(version string) {
 	baseDir := utils.GetBaseDir()
 	releasesFolder := filepath.Join(baseDir, "releases")
-	phpExists, phpPath, actualVersion := utils.PhpExists()
+	_, phpPath, actualVersion := utils.PhpExists()
 
-	if phpExists && filepath.Join(releasesFolder, "php-"+actualVersion) != phpPath {
+	if filepath.Join(releasesFolder, "php-"+actualVersion) != phpPath {
 		fmt.Println("PHP version", actualVersion, "found at", phpPath)
 		fmt.Println("If you can not use phpvm, please uninstall it first")
 		os.Exit(1)
